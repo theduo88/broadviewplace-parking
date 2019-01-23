@@ -166,7 +166,7 @@ export class ReportViolation extends Component {
                                     />
                                 </Grid>
                             </Grid>
-                            <Button variant="contained" color="primary">
+                            <Button variant="contained" color="primary" href="/violation-log">
                                 Submit
                             </Button>
                         </React.Fragment>

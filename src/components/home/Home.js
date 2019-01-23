@@ -21,7 +21,7 @@ class Home extends Component {
                             />
                         </Grid>
                         <Grid item xs={12} sm={3}>
-                            <Button variant="contained" color="primary">
+                            <Button variant="contained" color="primary" href="/report-violation">
                                 Check Plate
                             </Button>
                         </Grid>
