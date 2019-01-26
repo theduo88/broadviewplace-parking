@@ -14,6 +14,7 @@ export class ViolationLog extends Component {
 
     componentWillMount() {
         this.getViolation();
+
     }
 
     getViolation(state) {
@@ -22,13 +23,14 @@ export class ViolationLog extends Component {
         };
 
         this.setState(newState,() => {
-            return ViolationService.getViolations(null, this.state.data)
+            return ViolationService.getViolations(this.props.location.state.newViolation)
                 .then(async response => {
                     this.setState({
                         data: response
                     });
                 })
         })
+
     }
 
     filterCaseInsensitive(filter, row) {

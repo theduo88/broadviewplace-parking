@@ -6,32 +6,46 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
+import * as ViolationService from "../../services/ViolationService";
+import {Link} from "react-router-dom";
 
 export class ReportViolation extends Component {
     constructor(props, context, licensePlate) {
         super(props, context);
 
         this.handleChange = this.handleChange.bind(this);
+        this.checkExistingViolation = this.checkExistingViolation.bind(this);
+        console.log(props.location.state.data)
 
         this.state = {
-            isHidden: false,
             licensePlateNumber: Object.values(props.location.state)[0].toString(),
-        }
+            existingData: props.location.state.data
+
+        };
+
+        console.log(this.state)
+
+
+
     }
 
-    componentDidMount() {
+    componentWillMount() {
+        this.checkExistingViolation();
     }
 
+    checkExistingViolation()    {
+        let exists = ViolationService.plateNumberExists(this.state.licensePlateNumber, this.state.existingData);
+
+        this.setState({
+            error: exists
+        })
+
+    }
 
     handleChange (event) {
-        // let exists;
-        // if (event.target.name.toLowerCase() === 'licenseplatenumber') {
-        //     exists = ViolationService.plateNumberExists(event.target.value, this.state.data)
-        // }
 
         this.setState({
             [event.target.name]: event.target.value,
-            // error: exists
         });
     }
 
@@ -41,7 +55,7 @@ export class ReportViolation extends Component {
                 <Button variant="contained" color="primary" onClick={this.toggleHidden}>
                     +
                 </Button>
-                <Card hidden={this.state.isHidden}>
+                <Card>
                     <CardContent>
                         <React.Fragment>
                             <Typography variant="h6" gutterBottom>
@@ -166,7 +180,23 @@ export class ReportViolation extends Component {
                                     />
                                 </Grid>
                             </Grid>
-                            <Button variant="contained" color="primary" href="/violation-log">
+                            <Button variant="contained" color="primary" component={Link} to={{
+                                pathname: '/violation-log',
+                                state: {
+                                    newViolation: {
+                                        date: this.state.date,
+                                        time: this.state.time,
+                                        licensePlateNumber: this.state.licensePlateNumber,
+                                        state: this.state.state,
+                                        vehicle: this.state.vehicle,
+                                        location: this.state.location,
+                                        towingDeadline: this.state.towingDeadline,
+                                        reason: this.state.reason,
+                                        recordedBy: this.state.recordedBy,
+                                        otherNotes: this.state.otherNotes
+                                    }
+                                }
+                            }}>
                                 Submit
                             </Button>
                         </React.Fragment>

@@ -1,4 +1,4 @@
-export let getViolations = (newViolation, currentData) => {
+export let getViolations = (newViolation) => {
     return new Promise( async (resolve) =>{
         let data = [
             {

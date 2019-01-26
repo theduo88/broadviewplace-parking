@@ -4,12 +4,14 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { Link } from 'react-router-dom'
+import * as ViolationService from "../../services/ViolationService";
 
 class Home extends Component {
     constructor(props, context) {
         super(props, context);
 
         this.getLicensePlate = this.getLicensePlate.bind(this);
+        this.getViolation = this.getViolation.bind(this);
         this.state = {
             licencePlateNumber: '',
         }
@@ -19,6 +21,27 @@ class Home extends Component {
         this.setState({
             [event.target.name]: event.target.value,
         });
+    }
+
+    componentWillMount() {
+        this.getViolation();
+    }
+
+    getViolation() {
+        let newState = {
+            data: []
+        };
+
+        this.setState(newState,() => {
+            return ViolationService.getViolations(null, this.state.data)
+                .then(async response => {
+                    // console.log(response)
+                    this.setState({
+                        data: response
+                    });
+                })
+        })
+
     }
 
     render()    {
@@ -40,7 +63,8 @@ class Home extends Component {
                                 <Button variant="contained" color="primary" component={Link} to={{
                                     pathname: '/report-violation',
                                     state: {
-                                        licencePlateNumber: this.state.licencePlateNumber
+                                        licencePlateNumber: this.state.licencePlateNumber,
+                                        data: this.state.data
                                     }}}>
                                     Check Plate
                                 </Button>
