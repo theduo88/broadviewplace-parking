@@ -8,18 +8,20 @@ import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 
 export class ReportViolation extends Component {
-    constructor(props, context) {
+    constructor(props, context, licensePlate) {
         super(props, context);
 
-        // this.getViolation = this.getViolation.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        // this.setNewViolation = this.setNewViolation.bind(this);
-        // this.toggleHidden = this.toggleHidden.bind(this);
 
         this.state = {
-            isHidden: false
+            isHidden: false,
+            licensePlateNumber: Object.values(props.location.state)[0].toString(),
         }
     }
+
+    componentDidMount() {
+    }
+
 
     handleChange (event) {
         // let exists;
@@ -31,9 +33,6 @@ export class ReportViolation extends Component {
             [event.target.name]: event.target.value,
             // error: exists
         });
-
-        console.log(this.state)
-
     }
 
     render() {
@@ -84,6 +83,7 @@ export class ReportViolation extends Component {
                                         name="licensePlateNumber"
                                         label="License Plate"
                                         fullWidth
+                                        value={this.state.licensePlateNumber}
                                         onChange={this.handleChange}
                                         error={this.state.error === 'Plate has already be reported'}
                                         helperText={this.state.error === 'Plate has already be reported' ? this.state.error : ''}
