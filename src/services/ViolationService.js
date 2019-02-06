@@ -1,3 +1,27 @@
+export let getResidentVehicles = () => {
+    return new Promise(async (resolve) => {
+        let data = [
+            {
+                licensePlateNumber: 'PQQ151',
+                state: 'New York',
+                vehicle: 'Black VW Jetta',
+                unit: '504',
+                street: 'Broadview Place',
+
+            },
+            {
+                licensePlateNumber: 'ABC1234',
+                state: 'Georgia',
+                vehicle: 'Black BMW X6',
+                unit: '508',
+                street: 'Broadview Lane',
+
+            }
+        ];
+        return resolve(data);
+    })
+};
+
 export let getViolations = (newViolation) => {
     return new Promise( async (resolve) =>{
         let data = [

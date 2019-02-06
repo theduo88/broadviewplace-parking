@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -12,8 +11,13 @@ class Home extends Component {
 
         this.getLicensePlate = this.getLicensePlate.bind(this);
         this.getViolation = this.getViolation.bind(this);
+        this.getResidentVehicle = this.getResidentVehicle.bind(this);
+        this.vehicleIsRegistered = this.vehicleIsRegistered.bind(this);
+
         this.state = {
             licencePlateNumber: '',
+            residentVehicles: null,
+            error: null,
         }
     }
 
@@ -27,6 +31,33 @@ class Home extends Component {
         this.getViolation();
     }
 
+    getResidentVehicle()  {
+        ViolationService.getResidentVehicles()
+            .then( result => {
+                this.setState({
+                    residentVehicles: result
+                })
+            });
+    }
+
+    vehicleIsRegistered(licensePlateNumber)   {
+        this.setState({
+            error: ''
+        })
+        let registeredVehicle = this.state.residentVehicles;
+        if (registeredVehicle) {
+            registeredVehicle.reduce((result, item) => {
+                if (item.licensePlateNumber === licensePlateNumber) {
+                    this.setState({
+                        error: 'This vehicle belongs to a resident'
+                    })
+                }
+
+            });
+        }
+
+    }
+
     getViolation() {
         let newState = {
             data: []
@@ -35,7 +66,6 @@ class Home extends Component {
         this.setState(newState,() => {
             return ViolationService.getViolations(null, this.state.data)
                 .then(async response => {
-                    // console.log(response)
                     this.setState({
                         data: response
                     });
@@ -47,30 +77,34 @@ class Home extends Component {
     render()    {
         return  (
             <React.Fragment>
-                <Paper elevation={10}>
-                    <Grid container spacing={24}>
-                        <Grid item xs={12} sm={3}>
+                    <Grid  spacing={16}>
+                        <Grid item xs={12}>
                             <TextField
                                 required
                                 id="licencePlateNumber"
                                 name="licencePlateNumber"
                                 label="License Plate Number"
-                                onChange={this.getLicensePlate}
+                                onChange={ (event) => {
+                                    this.getLicensePlate(event);
+                                    this.getResidentVehicle();
+                                    this.vehicleIsRegistered(event.target.value);
+                                }}
+                                error={this.state.error === 'This vehicle belongs to a resident'}
+                                helperText={this.state.error === 'This vehicle belongs to a resident' ? this.state.error : ''}
                                 fullWidth
                             />
                         </Grid>
-                        <Grid item xs={12} sm={3}>
+                        <Grid item xs={12}>
                                 <Button variant="contained" color="primary" component={Link} to={{
                                     pathname: '/report-violation',
                                     state: {
                                         licencePlateNumber: this.state.licencePlateNumber,
                                         data: this.state.data
                                     }}}>
-                                    Check Plate
+                                    {this.state.error === 'This vehicle belongs to a resident' ? 'Report Anyway': 'Check Plate'}
                                 </Button>
                         </Grid>
                     </Grid>
-                </Paper>
             </React.Fragment>
         )
     }

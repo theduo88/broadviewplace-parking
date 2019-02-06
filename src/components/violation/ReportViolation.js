@@ -15,18 +15,12 @@ export class ReportViolation extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.checkExistingViolation = this.checkExistingViolation.bind(this);
-        console.log(props.location.state.data)
 
         this.state = {
             licensePlateNumber: Object.values(props.location.state)[0].toString(),
             existingData: props.location.state.data
 
         };
-
-        console.log(this.state)
-
-
-
     }
 
     componentWillMount() {
@@ -35,7 +29,6 @@ export class ReportViolation extends Component {
 
     checkExistingViolation()    {
         let exists = ViolationService.plateNumberExists(this.state.licensePlateNumber, this.state.existingData);
-
         this.setState({
             error: exists
         })
@@ -52,9 +45,6 @@ export class ReportViolation extends Component {
     render() {
         return (
             <div>
-                <Button variant="contained" color="primary" onClick={this.toggleHidden}>
-                    +
-                </Button>
                 <Card>
                     <CardContent>
                         <React.Fragment>
