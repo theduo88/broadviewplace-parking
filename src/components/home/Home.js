@@ -13,10 +13,12 @@ class Home extends Component {
         this.getViolation = this.getViolation.bind(this);
         this.getResidentVehicle = this.getResidentVehicle.bind(this);
         this.vehicleIsRegistered = this.vehicleIsRegistered.bind(this);
+        this.getGuestVehicle = this.getGuestVehicle.bind(this);
 
         this.state = {
             licencePlateNumber: '',
             residentVehicles: null,
+            guestVehicles: null,
             error: null,
         }
     }
@@ -40,10 +42,21 @@ class Home extends Component {
             });
     }
 
+    getGuestVehicle()  {
+        ViolationService.getGuestVehicles()
+            .then( result => {
+                this.setState({
+                    guestVehicles: result
+                })
+            });
+    }
+
     vehicleIsRegistered(licensePlateNumber)   {
+        this.getResidentVehicle();
+        this.getGuestVehicle();
         this.setState({
             error: ''
-        })
+        });
         let registeredVehicle = this.state.residentVehicles;
         if (registeredVehicle) {
             registeredVehicle.reduce((result, item) => {
@@ -56,6 +69,17 @@ class Home extends Component {
             });
         }
 
+        let guestVehicle = this.state.guestVehicles;
+        if (guestVehicle) {
+            guestVehicle.reduce((result, item) => {
+                if (item.licensePlateNumber === licensePlateNumber) {
+                    this.setState({
+                        error: 'This vehicle is registered as a guest'
+                    })
+                }
+
+            });
+        }
     }
 
     getViolation() {
@@ -86,11 +110,10 @@ class Home extends Component {
                                 label="License Plate Number"
                                 onChange={ (event) => {
                                     this.getLicensePlate(event);
-                                    this.getResidentVehicle();
                                     this.vehicleIsRegistered(event.target.value);
                                 }}
-                                error={this.state.error === 'This vehicle belongs to a resident'}
-                                helperText={this.state.error === 'This vehicle belongs to a resident' ? this.state.error : ''}
+                                error={this.state.error === 'This vehicle belongs to a resident' || this.state.error === 'This vehicle is registered as a guest'}
+                                helperText={this.state.error === 'This vehicle belongs to a resident' || this.state.error === 'This vehicle is registered as a guest' ? this.state.error : ''}
                                 fullWidth
                             />
                         </Grid>
@@ -101,7 +124,7 @@ class Home extends Component {
                                         licencePlateNumber: this.state.licencePlateNumber,
                                         data: this.state.data
                                     }}}>
-                                    {this.state.error === 'This vehicle belongs to a resident' ? 'Report Anyway': 'Check Plate'}
+                                    {this.state.error === 'This vehicle belongs to a resident' || this.state.error === 'This vehicle is registered as a guest'? 'Report Anyway': 'Check Plate'}
                                 </Button>
                         </Grid>
                     </Grid>
